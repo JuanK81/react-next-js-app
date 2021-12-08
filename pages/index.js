@@ -1,43 +1,20 @@
 //our-domain/
-import { MongoClient } from "mongodb";//server side, next excludes this from the client bundle atumatically.
+import { Fragment } from "react";
+import Head from "next/head";
+import { MongoClient } from "mongodb"; //server side, next excludes this from the client bundle atumatically.
 import MeetupList from "../components/meetups/MeetupList";
 
-// const DUMMY_MEETUPS = [
-//   {
-//     id: "m1",
-//     title: "First Meetup",
-//     image:
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Plaza_Mayor_de_A%C3%ADnsa_%28Huesca%29.jpg/1024px-Plaza_Mayor_de_A%C3%ADnsa_%28Huesca%29.jpg",
-//     address: "Ainsa",
-//     description: "First meetup",
-//   },
-//   {
-//     id: "m2",
-//     title: "Second Meetup",
-//     image:
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Plaza_Mayor_de_A%C3%ADnsa_%28Huesca%29.jpg/1024px-Plaza_Mayor_de_A%C3%ADnsa_%28Huesca%29.jpg",
-//     address: "Ainsa",
-//     description: "Second meetup",
-//   },
-// ];
-
 const HomePage = (props) => {
-  return <MeetupList meetups={props.meetups} />;
+  return (
+    <Fragment>
+      <Head>
+        <title>React Meetups</title>
+        {/* <meta>name="description" content="browse a list of meetups"</meta> */}
+      </Head>
+      <MeetupList meetups={props.meetups} />
+    </Fragment>
+  );
 };
-
-// export async function getServerSideProps(context) { //runs on the server after deployment
-// 	const req = context.req;
-// 	const res = context.res;
-
-// 	//fetch data, runs on the server
-
-// 	return {
-// 		props: {
-// 			meetups: DUMMY_MEETUPS,
-// 		},
-// 	}
-// };
-
 
 export async function getStaticProps() {
   const client = await MongoClient.connect(
@@ -51,17 +28,17 @@ export async function getStaticProps() {
   const meetups = await meetupsCollection.find().toArray();
 
   client.close();
-  
+
   return {
     props: {
-      meetups: meetups.map(meetup => ({
+      meetups: meetups.map((meetup) => ({
         title: meetup.title,
         address: meetup.address,
         image: meetup.image,
         id: meetup._id.toString(),
       })),
     },
-	// revalidate: 10, //seconds to regerate the static page
+    // revalidate: 10, //seconds to regerate the static page
   };
 }
 
